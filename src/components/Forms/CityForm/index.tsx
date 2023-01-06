@@ -26,6 +26,13 @@ export const CityForm = ({ defaultValues, onSubmit }: CityFormProps) => {
         placeholder="Nome"
       />
 
+      <Input
+        label="Estado"
+        {...register("state", { required: "Campo obrigatório" })}
+        errors={errors?.name}
+        placeholder="Estado"
+      />
+
       <Button
         type="submit"
         size="lg"

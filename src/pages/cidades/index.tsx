@@ -1,60 +1,67 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { Button, HStack, useDisclosure } from "@chakra-ui/react"
-import { AxiosResponse } from "axios"
 
 import { RefreshButton } from "@components/ActionButtons/RefreshButton"
 import { CityItem } from "@components/Items/CityItem"
 import { ListView } from "@components/List"
 import { CityModal } from "@components/Modals/CityModal"
 import { PageHeader } from "@components/PageHeader"
-import { useRequest } from "@hooks/useRequest"
-import { getCities } from "@services/Cidades"
+import { apiCities } from "@services/apiCities"
 
 const ListaCidades = () => {
   const isCreateAuthorized = true
+  const isValidating = false
+  const [isLoading, setIsLoading] = useState(false)
+  const [cities, setCities] = useState<City[]>([])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [cityToEdit, setCityToEdit] = useState<City>()
 
-  const {
-    data: cities,
-    isLoading,
-    isValidating,
-    mutate
-  } = useRequest<City[]>(getCities)
+  async function getCities() {
+    setIsLoading(true)
 
-  const refresh = useCallback(
-    (data?: City[]) =>
-      mutate(
-        {
-          data: {
-            error: null,
-            message: "",
-            data: data ?? []
-          }
-        } as AxiosResponse<ApiResponse<City[]>>,
-        { revalidate: !data }
-      ),
-    [mutate]
-  )
+    try {
+      const response = await apiCities.get<City[]>(
+        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}cities`
+      )
 
-  const onDelete = useCallback(
-    (result: Result<ApiResponse<null>>, { id }: City) => {
-      if (result.type === "success") {
-        toast.success(result.value?.message)
+      setCities(response.data)
+    } catch (err) {
+      toast.error("Não foi possível carregar os dados das cidades")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-        const newCities = cities?.data.filter((city) => city.id !== id)
-        refresh(newCities)
+  useEffect(() => {
+    getCities()
+  }, [])
 
-        return
-      }
+  // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
+  const mutate = async () => {
+    getCities()
+  }
 
-      toast.error(result.error?.message)
-    },
-    [cities?.data, refresh]
-  )
+  const onDelete = useCallback(async (cityId: string) => {
+    try {
+      await apiCities.delete(
+        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}cities/${cityId}`
+      )
+
+      getCities()
+
+      toast.success("Cidade removida com sucesso!")
+    } catch {
+      toast.error("Não foi possível remover a cidade. Tente novamente!")
+    }
+  }, [])
+
+  // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
+  const onSubmit = () => {
+    getCities()
+  }
 
   const onEdit = useCallback(
     (city: City) => {
@@ -62,29 +69,6 @@ const ListaCidades = () => {
       onOpen()
     },
     [onOpen]
-  )
-
-  const onSubmit = useCallback(
-    (result: Result<ApiResponse<City>>) => {
-      if (result.type === "error") {
-        toast.error(result.error?.message)
-
-        return
-      }
-
-      toast.success(result.value?.message)
-
-      const newCities = cityToEdit
-        ? cities?.data.map((city) =>
-            city.id === cityToEdit?.id ? result.value.data : city
-          )
-        : [...(cities?.data || []), result.value?.data]
-
-      refresh(newCities)
-      setCityToEdit(undefined)
-      onClose()
-    },
-    [onClose, cityToEdit, cities?.data, refresh]
   )
 
   const handleClose = useCallback(() => {
@@ -109,7 +93,7 @@ const ListaCidades = () => {
       </PageHeader>
 
       <ListView<City>
-        items={cities?.data}
+        items={cities}
         render={renderCityItem}
         isLoading={isLoading || isValidating}
       />

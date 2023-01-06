@@ -1,6 +1,6 @@
 import { Services } from "@services"
 
-const CityService = Services.localidades.create("/city")
+const CityService = Services.localidades.create("/cities")
 
 export const getCities = CityService.get()
 
