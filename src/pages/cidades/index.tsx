@@ -24,11 +24,12 @@ const ListaCidades = () => {
 
     try {
       const response = await apiCities.get<City[]>(
-        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}cities`
+        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}/cities`
       )
 
       setCities(response.data)
     } catch (err) {
+      console.log(err)
       toast.error("Não foi possível carregar os dados das cidades")
     } finally {
       setIsLoading(false)
@@ -47,7 +48,7 @@ const ListaCidades = () => {
   const onDelete = useCallback(async (cityId: string) => {
     try {
       await apiCities.delete(
-        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}cities/${cityId}`
+        `${process.env.NEXT_PUBLIC_GERENCIADOR_DE_LOCALIDADES_URL}/cities/${cityId}`
       )
 
       getCities()
