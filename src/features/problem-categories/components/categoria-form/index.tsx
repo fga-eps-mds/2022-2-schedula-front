@@ -5,7 +5,8 @@ import { Input } from '@/components/form-fields';
 
 interface CategoriaFormProps {
   defaultValues?: Category | undefined;
-  onSubmit: SubmitHandler<CategoryPayload> | SubmitHandler<ProblemTypePayload>;
+  onSubmit: (data: CategoryPayload) => void;
+  isSubmitting: boolean;
 }
 
 export function CategoriaForm({ defaultValues, onSubmit }: CategoriaFormProps) {
@@ -13,7 +14,7 @@ export function CategoriaForm({ defaultValues, onSubmit }: CategoriaFormProps) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ProblemTypePayload>({
+  } = useForm<CategoryPayload>({
     defaultValues,
   });
 

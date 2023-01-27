@@ -69,11 +69,11 @@ function ProblemCategories() {
         isLoading={isLoading}
       />
 
-      {/* <CategoryModal
+      <CategoryModal
         isOpen={isOpen}
         onClose={handleClose}
-        problemcategory={problemcategoryToEdit}
-      /> */}
+        category={problemcategoryToEdit}
+      />
     </>
   );
 }

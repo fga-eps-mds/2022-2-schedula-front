@@ -1,14 +1,9 @@
 interface TipoProblema {
-  id: number;
+  id: string;
   name: string;
-  description: string;
-  category_id: number;
-  active: boolean;
-  updated_at: Date;
+  category: Category;
 }
 
 interface ProblemTypePayload {
   name: string;
-  description: string;
-  category_id: number;
 }

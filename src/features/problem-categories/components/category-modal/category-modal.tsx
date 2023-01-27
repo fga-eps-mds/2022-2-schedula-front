@@ -5,7 +5,6 @@ import { CategoriaForm } from '@/components/forms/categoria-form';
 
 interface CategoryModalProps extends Partial<ModalProps> {
   category?: Category | undefined;
-  onSubmit: (result: Result<ApiResponse<Category>>) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -13,7 +12,6 @@ interface CategoryModalProps extends Partial<ModalProps> {
 export function CategoryModal({
   onClose,
   category,
-  onSubmit,
   ...props
 }: CategoryModalProps) {
   const handleSubmit = useCallback(async (data: CategoryPayload) => {

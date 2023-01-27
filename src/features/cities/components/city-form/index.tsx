@@ -38,7 +38,7 @@ export function CityForm({
 
       <Input
         label="Estado"
-        {...register('state', { required: 'Campo obrigatórtio' })}
+        {...register('state', { required: 'Campo obrigatório' })}
         errors={errors?.name}
         placeholder="Estado"
       />
